@@ -8,8 +8,8 @@ import {Icon} from "./Icon";
 const simpleMenu=[
  {label:"صفحه اصلی",href:"/#home"},
  {label:"لیست قیمت",href:"/#price-lists"},
- {label:"درباره ما",href:"/#why-khaji"},
- {label:"تماس با ما",href:"/#contact"},
+
+ {label:"تماس با ما",href:"/contact"},
 ];
 export function SiteHeader(){
  const [menuOpen,setMenuOpen]=useState(false);
