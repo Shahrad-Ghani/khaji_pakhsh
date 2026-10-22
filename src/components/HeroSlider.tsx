@@ -82,38 +82,46 @@ export function HeroSlider() {
         aria-roledescription="carousel"
         aria-label="بنرهای معرفی خاجی پخش"
       >
-        {slides.map((slide, index) => (
-          <div
-            className={`hero-slider-art-layer ${index === activeIndex ? "is-active" : ""} ${slide.tone === "special" ? "is-special" : ""}`}
-            key={slide.id}
-            aria-hidden="true"
-          >
-            <Image
-              src={slide.image}
-              alt=""
-              fill
-              priority={index === 0}
-              sizes="(max-width: 720px) 100vw, 54vw"
-              className="hero-slider-image"
-            />
-            {slide.calendar && (
-              <div className="hero-slider-calendar">
-                <span className="hero-slider-calendar-rings" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="hero-slider-calendar-label">دوشنبه‌های</span>
-                <strong>ویژه</strong>
-                <span className="hero-slider-calendar-lines" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
+        <div className="hero-slider-art-track" aria-hidden="true">
+          {slides.map((slide, index) => {
+            const relativeIndex = (index - activeIndex + slides.length) % slides.length;
+            const slidePosition =
+              relativeIndex > slides.length / 2 ? relativeIndex - slides.length : relativeIndex;
+
+            return (
+              <div
+                className={`hero-slider-art-layer ${slide.tone === "special" ? "is-special" : ""}`}
+                key={slide.id}
+                style={{ transform: `translateX(${slidePosition * 100}%)` }}
+              >
+                <Image
+                  src={slide.image}
+                  alt=""
+                  fill
+                  priority={index === 0}
+                  sizes="(max-width: 720px) 100vw, 54vw"
+                  className="hero-slider-image"
+                />
+                {slide.calendar && (
+                  <div className="hero-slider-calendar">
+                    <span className="hero-slider-calendar-rings" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                    <span className="hero-slider-calendar-label">دوشنبه‌های</span>
+                    <strong>ویژه</strong>
+                    <span className="hero-slider-calendar-lines" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
 
         <div className="hero-slider-copy" aria-live="off">
           <span className="hero-slider-overline">{activeSlide.overline}</span>
@@ -148,7 +156,7 @@ export function HeroSlider() {
           onClick={showPrevious}
           aria-label="اسلاید قبلی"
         >
-          <Icon name="arrow-left" size={21} />
+          <Icon name="arrow" size={21} />
         </button>
         <button
           className="hero-slider-arrow hero-slider-next"
