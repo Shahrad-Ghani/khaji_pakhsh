@@ -64,7 +64,6 @@ type Direction = -1 | 1;
 
 export function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [trackPosition, setTrackPosition] = useState(1);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -115,13 +114,13 @@ export function HeroSlider() {
   }, [move]);
 
   useEffect(() => {
-    // Preserve V1.0.1's pause/resume control and respect reduced-motion preferences.
-    if (isPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Respect reduced-motion preferences while keeping automatic playback enabled.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Start a fresh 5-second countdown after each slide change or manual navigation.
     const timer = window.setTimeout(showNext, 5000);
     return () => window.clearTimeout(timer);
-  }, [activeIndex, timerResetKey, isPaused, showNext]);
+  }, [activeIndex, timerResetKey, showNext]);
 
   useEffect(() => {
     if (isTransitionEnabled) return;
@@ -273,7 +272,7 @@ export function HeroSlider() {
           onClick={showPrevious}
           aria-label="اسلاید قبلی"
         >
-          <Icon name="arrow-left" size={21} />
+          <Icon name="arrow" size={21} />
         </button>
         <button
           className="hero-slider-arrow hero-slider-next"
@@ -298,15 +297,6 @@ export function HeroSlider() {
               />
             ))}
           </div>
-          <button
-            type="button"
-            className="hero-slider-pause"
-            onClick={() => setIsPaused((paused) => !paused)}
-            aria-label={isPaused ? "ادامه پخش خودکار" : "توقف پخش خودکار"}
-            title={isPaused ? "ادامه پخش خودکار" : "توقف پخش خودکار"}
-          >
-            {isPaused ? "▶" : "Ⅱ"}
-          </button>
         </div>
       </div>
     </section>
