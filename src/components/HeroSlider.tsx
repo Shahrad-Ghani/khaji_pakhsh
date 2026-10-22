@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type TransitionEvent } from "react";
 import { Icon } from "@/components/Icon";
 import { SALES_TEL } from "@/content/site";
 
@@ -54,100 +54,144 @@ const slides = [
   },
 ] as const;
 
+// Cloned end slides let the carousel wrap without an off-screen panel
+// travelling across the entire card in the opposite direction.
+const extendedSlides = [
+  { slide: slides[slides.length - 1], key: "clone-last" },
+  ...slides.map((slide) => ({ slide, key: slide.id })),
+  { slide: slides[0], key: "clone-first" },
+];
+
 export function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [trackPosition, setTrackPosition] = useState(1);
+  const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const activeSlide = slides[activeIndex];
+
+  const showPrevious = useCallback(() => {
+    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
+    setTrackPosition((current) => current - 1);
+  }, []);
+
+  const showNext = useCallback(() => {
+    setActiveIndex((current) => (current + 1) % slides.length);
+    setTrackPosition((current) => current + 1);
+  }, []);
 
   useEffect(() => {
     if (isPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
-    const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length);
-    }, 5000);
+    const timer = window.setInterval(showNext, 5000);
     return () => window.clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, showNext]);
 
-  const showPrevious = () =>
-    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
-  const showNext = () =>
-    setActiveIndex((current) => (current + 1) % slides.length);
+  useEffect(() => {
+    if (isTransitionEnabled) return;
+    const frame = window.requestAnimationFrame(() => setIsTransitionEnabled(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [isTransitionEnabled]);
+
+  const handleTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget || event.propertyName !== "transform") {
+      return;
+    }
+
+    if (trackPosition === 0) {
+      setIsTransitionEnabled(false);
+      setTrackPosition(slides.length);
+    } else if (trackPosition === slides.length + 1) {
+      setIsTransitionEnabled(false);
+      setTrackPosition(1);
+    }
+  };
+
+  const goToSlide = (index: number) => {
+    if (index === activeIndex) return;
+    setActiveIndex(index);
+    setTrackPosition(index + 1);
+  };
 
   return (
     <section className="hero-slider-wrap" aria-label="پیشنهادهای خاجی پخش">
       <div
-        className={`hero-slider ${activeSlide.tone === "special" ? "is-special" : ""}`}
+        className="hero-slider"
         role="region"
         aria-roledescription="carousel"
         aria-label="بنرهای معرفی خاجی پخش"
       >
-        <div className="hero-slider-art-track" aria-hidden="true">
-          {slides.map((slide, index) => {
-            const relativeIndex = (index - activeIndex + slides.length) % slides.length;
-            const slidePosition =
-              relativeIndex > slides.length / 2 ? relativeIndex - slides.length : relativeIndex;
+        <div
+          className={`hero-slider-track ${isTransitionEnabled ? "" : "is-no-transition"}`}
+          style={{ transform: `translateX(-${trackPosition * 20}%)` }}
+          onTransitionEnd={handleTrackTransitionEnd}
+        >
+          {extendedSlides.map(({ slide, key }, physicalIndex) => {
+            const isCurrent = physicalIndex === trackPosition;
+            const HeadingTag = isCurrent ? "h1" : "h2";
 
             return (
-              <div
-                className={`hero-slider-art-layer ${slide.tone === "special" ? "is-special" : ""}`}
-                key={slide.id}
-                style={{ transform: `translateX(${slidePosition * 100}%)` }}
+              <article
+                className={`hero-slider-panel ${slide.tone === "special" ? "is-special" : ""}`}
+                key={key}
+                aria-hidden={!isCurrent}
+                inert={!isCurrent}
               >
-                <Image
-                  src={slide.image}
-                  alt=""
-                  fill
-                  priority={index === 0}
-                  sizes="(max-width: 720px) 100vw, 54vw"
-                  className="hero-slider-image"
-                />
-                {slide.calendar && (
-                  <div className="hero-slider-calendar">
-                    <span className="hero-slider-calendar-rings" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                    </span>
-                    <span className="hero-slider-calendar-label">دوشنبه‌های</span>
-                    <strong>ویژه</strong>
-                    <span className="hero-slider-calendar-lines" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                    </span>
+                <div className={`hero-slider-art-layer ${slide.tone === "special" ? "is-special" : ""}`}>
+                  <Image
+                    src={slide.image}
+                    alt=""
+                    fill
+                    priority={slide.id === "bulk"}
+                    sizes="(max-width: 720px) 100vw, 54vw"
+                    className="hero-slider-image"
+                  />
+                  {slide.calendar && (
+                    <div className="hero-slider-calendar">
+                      <span className="hero-slider-calendar-rings" aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                      <span className="hero-slider-calendar-label">دوشنبه‌های</span>
+                      <strong>ویژه</strong>
+                      <span className="hero-slider-calendar-lines" aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="hero-slider-copy">
+                  <span className="hero-slider-overline">{slide.overline}</span>
+                  <HeadingTag id={isCurrent ? "hero-title" : undefined}>
+                    {slide.title}
+                    <strong>{slide.highlight}</strong>
+                  </HeadingTag>
+                  <span className="hero-slider-rule" aria-hidden="true" />
+                  <p>{slide.description}</p>
+                  <div className="hero-slider-cta">
+                    <Link className="button button-gold button-xl" href={slide.primaryHref}>
+                      {slide.primaryLabel}
+                      <Icon name="arrow" size={18} />
+                    </Link>
+                    {slide.secondaryHref.startsWith("tel:") ? (
+                      <a className="button button-outline button-xl" href={slide.secondaryHref}>
+                        {slide.secondaryLabel}
+                        <Icon name="phone" size={17} />
+                      </a>
+                    ) : (
+                      <Link className="button button-outline button-xl" href={slide.secondaryHref}>
+                        {slide.secondaryLabel}
+                        <Icon name="grid" size={17} />
+                      </Link>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              </article>
             );
           })}
-        </div>
-
-        <div className="hero-slider-copy" aria-live="off">
-          <span className="hero-slider-overline">{activeSlide.overline}</span>
-          <h1 id="hero-title">
-            {activeSlide.title}
-            <strong>{activeSlide.highlight}</strong>
-          </h1>
-          <span className="hero-slider-rule" aria-hidden="true" />
-          <p>{activeSlide.description}</p>
-          <div className="hero-slider-cta">
-            <Link className="button button-gold button-xl" href={activeSlide.primaryHref}>
-              {activeSlide.primaryLabel}
-              <Icon name="arrow" size={18} />
-            </Link>
-            {activeSlide.secondaryHref.startsWith("tel:") ? (
-              <a className="button button-outline button-xl" href={activeSlide.secondaryHref}>
-                {activeSlide.secondaryLabel}
-                <Icon name="phone" size={17} />
-              </a>
-            ) : (
-              <Link className="button button-outline button-xl" href={activeSlide.secondaryHref}>
-                {activeSlide.secondaryLabel}
-                <Icon name="grid" size={17} />
-              </Link>
-            )}
-          </div>
         </div>
 
         <button
@@ -174,7 +218,7 @@ export function HeroSlider() {
                 key={slide.id}
                 type="button"
                 className={`hero-slider-dot ${index === activeIndex ? "is-active" : ""}`}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => goToSlide(index)}
                 aria-label={`رفتن به اسلاید ${index + 1}`}
                 aria-pressed={index === activeIndex}
               />
