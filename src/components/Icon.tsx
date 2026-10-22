@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-type IconName = "arrow"|"arrow-left"|"search"|"menu"|"close"|"phone"|"chevron"|"shield"|"layers"|"file"|"message"|"truck"|"check"|"sparkle"|"package"|"grid"|"clock"|"bolt"|"external";
+type IconName = "arrow"|"arrow-left"|"search"|"menu"|"close"|"phone"|"chevron"|"shield"|"layers"|"file"|"message"|"truck"|"check"|"plus"|"sparkle"|"package"|"grid"|"clock"|"bolt"|"external";
 export function Icon({name, size=20, className="", ...props}: {name:IconName; size?:number; className?:string} & SVGProps<SVGSVGElement>) {
   const common={width:size,height:size,fill:"none",stroke:"currentColor",strokeWidth:1.75,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,viewBox:"0 0 24 24","aria-hidden":true as const,className,...props};
   const shapes: Record<IconName, React.ReactNode>={
@@ -17,6 +17,7 @@ export function Icon({name, size=20, className="", ...props}: {name:IconName; si
     message:<><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5a9 9 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5Z"/></>,
     truck:<><path d="M3 5h12v12H3zM15 9h4l3 4v4h-7"/><circle cx="7.5" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/></>,
     check:<><path d="m5 12 4 4L19 6"/></>,
+    plus:<><path d="M12 5v14M5 12h14"/></>,
     sparkle:<><path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3L12 2Z"/></>,
     package:<><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></>,
     grid:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
