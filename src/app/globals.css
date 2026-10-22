@@ -656,7 +656,7 @@ html{scroll-padding-top:168px}
  .hero-slider-arrow{width:34px;height:34px;top:30%}
  .hero-slider-previous{right:10px;transform:translateY(-50%)}
  .hero-slider-next{left:10px;transform:translateY(-50%) rotate(180deg)}
- .hero-slider-next:hover{transform:translateY(-50%) rotate(180deg) scale(1.04)}
+ .hero-slider-next:hover:not(:disabled){transform:translateY(-50%) rotate(180deg) scale(1.04)}
  .hero-slider-controls{bottom:12px}
  .hero-slider-calendar{top:42%;left:50%;transform:translate(-50%,-50%) rotate(-3deg);width:105px;min-height:113px;padding:17px 8px 7px}
  .hero-slider-calendar::before{height:23px}
@@ -752,7 +752,7 @@ html{scroll-padding-top:168px}
  .hero-slider-arrow{width:34px;height:34px;top:30%}
  .hero-slider-previous{left:10px;transform:translateY(-50%)}
  .hero-slider-next{right:10px;transform:translateY(-50%) rotate(180deg)}
- .hero-slider-next:hover{transform:translateY(-50%) rotate(180deg) scale(1.04)}
+ .hero-slider-next:hover:not(:disabled){transform:translateY(-50%) rotate(180deg) scale(1.04)}
  .hero-slider-controls{bottom:12px}
  .hero-slider-calendar{top:42%;left:50%;transform:translate(-50%,-50%) rotate(-3deg);width:105px;min-height:113px;padding:17px 8px 7px}
  .hero-slider-calendar::before{height:23px}
