@@ -613,7 +613,7 @@ html{scroll-padding-top:168px}
 .hero-slider-arrow:disabled,.hero-slider-dot:disabled{cursor:wait;opacity:.65}
 .hero-slider-previous{right:19px;transform:translateY(-50%)}
 .hero-slider-next{left:19px;transform:translateY(-50%) rotate(180deg)}
-.hero-slider-next:hover{transform:translateY(-50%) rotate(180deg) scale(1.04)}
+.hero-slider-next:hover:not(:disabled){transform:translateY(-50%) rotate(180deg) scale(1.04)}
 .hero-slider-controls{position:absolute;z-index:5;bottom:16px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:13px;pointer-events:none}
 .hero-slider-dots{display:flex;align-items:center;justify-content:center;gap:8px;pointer-events:auto}
 .hero-slider-dot{width:10px;height:10px;border:0;border-radius:50%;padding:0;background:#d4d1c9;transition:width .25s,background .25s}
