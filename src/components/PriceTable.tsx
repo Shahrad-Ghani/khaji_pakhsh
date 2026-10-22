@@ -40,8 +40,12 @@ export function PriceTable() {
   const rows = useMemo(() => {
     const query = normalize(search);
     return samplePrices.filter((row) => {
-      const categoryMatch = activeCategory === "همه محصولات" || row.group === activeCategory ||
-        categories.some((category) => category.shortTitle === activeCategory && category.title === row.group);
+      const selectedCategory = categories.find((category) => category.shortTitle === activeCategory);
+      const mappedGroup = selectedCategory?.slug === "lighting" ? "روشنایی" :
+        selectedCategory?.slug === "circuit-protection" ? "تجهیزات حفاظتی" :
+        selectedCategory?.slug === "wire-cable" ? "سیم و کابل" :
+        selectedCategory?.slug === "switches-sockets" ? "کلید و پریز" : activeCategory;
+      const categoryMatch = activeCategory === "همه محصولات" || row.group === mappedGroup;
       const brandMatch = activeBrand === "همه برندها" || row.brand === activeBrand;
       const searchMatch = !query || normalize([row.product, row.brand, row.group, row.unit, String(row.id)].join(" ")).includes(query);
       return categoryMatch && brandMatch && searchMatch;
