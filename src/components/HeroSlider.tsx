@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState, type TransitionEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type TransitionEvent } from "react";
 import { Icon } from "@/components/Icon";
 import { SALES_TEL } from "@/content/site";
 
@@ -54,8 +54,6 @@ const slides = [
   },
 ] as const;
 
-// Cloned end slides let the carousel wrap without an off-screen panel
-// travelling across the entire card in the opposite direction.
 const extendedSlides = [
   { slide: slides[slides.length - 1], key: "clone-last" },
   ...slides.map((slide) => ({ slide, key: slide.id })),
@@ -66,31 +64,74 @@ export function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [trackPosition, setTrackPosition] = useState(1);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const isAnimatingRef = useRef(false);
 
-  const showPrevious = useCallback(() => {
-    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
-    setTrackPosition((current) => current - 1);
-  }, []);
+  const move = useCallback((direction: -1 | 1) => {
+    // Do not allow rapid clicks to push the track beyond its clone panels.
+    if (isAnimatingRef.current) return;
 
-  const showNext = useCallback(() => {
-    setActiveIndex((current) => (current + 1) % slides.length);
-    setTrackPosition((current) => current + 1);
-  }, []);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setActiveIndex((current) => (current + direction + slides.length) % slides.length);
 
-  useEffect(() => {
-    if (isPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (reducedMotion) {
+      // With transitions disabled, jump directly to a real panel (never a clone).
+      setTrackPosition((current) => {
+        const next = current + direction;
+        if (next <= 0) return slides.length;
+        if (next >= slides.length + 1) return 1;
+        return next;
+      });
       return;
     }
-    const timer = window.setInterval(showNext, 5000);
-    return () => window.clearInterval(timer);
-  }, [isPaused, showNext]);
+
+    isAnimatingRef.current = true;
+    setIsAnimating(true);
+    setTrackPosition((current) => current + direction);
+  }, []);
+
+  const showPrevious = useCallback(() => move(-1), [move]);
+  const showNext = useCallback(() => move(1), [move]);
+
+  useEffect(() => {
+    // Respect reduced-motion preferences; manual navigation remains available.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // A timeout (rather than a persistent interval) starts a fresh 5s wait
+    // after every accepted navigation, including manual arrow/dot clicks.
+    const timer = window.setTimeout(showNext, 5000);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, showNext]);
 
   useEffect(() => {
     if (isTransitionEnabled) return;
-    const frame = window.requestAnimationFrame(() => setIsTransitionEnabled(true));
+    const frame = window.requestAnimationFrame(() => {
+      setIsTransitionEnabled(true);
+      isAnimatingRef.current = false;
+      setIsAnimating(false);
+    });
     return () => window.cancelAnimationFrame(frame);
   }, [isTransitionEnabled]);
+
+  // Failsafe: unlock if the browser doesn't emit transitionend.
+  useEffect(() => {
+    if (!isAnimating || !isTransitionEnabled) return;
+
+    const timer = window.setTimeout(() => {
+      if (trackPosition === 0) {
+        setIsTransitionEnabled(false);
+        setTrackPosition(slides.length);
+      } else if (trackPosition === slides.length + 1) {
+        setIsTransitionEnabled(false);
+        setTrackPosition(1);
+      } else {
+        isAnimatingRef.current = false;
+        setIsAnimating(false);
+      }
+    }, 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [isAnimating, isTransitionEnabled, trackPosition]);
 
   const handleTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget || event.propertyName !== "transform") {
@@ -103,12 +144,25 @@ export function HeroSlider() {
     } else if (trackPosition === slides.length + 1) {
       setIsTransitionEnabled(false);
       setTrackPosition(1);
+    } else {
+      isAnimatingRef.current = false;
+      setIsAnimating(false);
     }
   };
 
   const goToSlide = (index: number) => {
-    if (index === activeIndex) return;
+    if (index === activeIndex || isAnimatingRef.current) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setActiveIndex(index);
+
+    if (reducedMotion) {
+      setTrackPosition(index + 1);
+      return;
+    }
+
+    isAnimatingRef.current = true;
+    setIsAnimating(true);
     setTrackPosition(index + 1);
   };
 
@@ -199,6 +253,7 @@ export function HeroSlider() {
           className="hero-slider-arrow hero-slider-previous"
           type="button"
           onClick={showPrevious}
+          disabled={isAnimating}
           aria-label="اسلاید قبلی"
         >
           <Icon name="arrow" size={21} />
@@ -207,12 +262,13 @@ export function HeroSlider() {
           className="hero-slider-arrow hero-slider-next"
           type="button"
           onClick={showNext}
+          disabled={isAnimating}
           aria-label="اسلاید بعدی"
         >
           <Icon name="arrow" size={21} />
         </button>
 
-        <div className="hero-slider-controls" aria-label="کنترل پخش اسلایدها">
+        <div className="hero-slider-controls" aria-label="کنترل اسلایدها">
           <div className="hero-slider-dots">
             {slides.map((slide, index) => (
               <button
@@ -220,20 +276,12 @@ export function HeroSlider() {
                 type="button"
                 className={`hero-slider-dot ${index === activeIndex ? "is-active" : ""}`}
                 onClick={() => goToSlide(index)}
+                disabled={isAnimating}
                 aria-label={`رفتن به اسلاید ${index + 1}`}
                 aria-pressed={index === activeIndex}
               />
             ))}
           </div>
-          <button
-            type="button"
-            className="hero-slider-pause"
-            onClick={() => setIsPaused((paused) => !paused)}
-            aria-label={isPaused ? "ادامه پخش خودکار" : "توقف پخش خودکار"}
-            title={isPaused ? "ادامه پخش خودکار" : "توقف پخش خودکار"}
-          >
-            {isPaused ? "▶" : "Ⅱ"}
-          </button>
         </div>
       </div>
     </section>
