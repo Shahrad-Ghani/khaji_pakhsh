@@ -37,7 +37,19 @@ export const brands: Brand[] = [
   {slug:"part-electric",name:"پارت الکتریک",image:"/images/brands/part-electric.webp",field:"کلید و پریز"},
   {slug:"damghan-cable",name:"سیم و کابل دامغان",image:"/images/brands/damghan-cable.webp",field:"سیم و کابل"},
   {slug:"shiva-amvaj",name:"شیوا امواج",image:"/images/brands/shiva-amvaj.webp",field:"کنترل صنعتی"},
-];
+"];
+
+/** Temporary category-to-brand associations for the Production V1 demo. Replace after the client confirms the final assortment. */
+export const categoryBrandSlugs: Record<string, string[]> = {
+  "wire-cable": ["afshar-nejad", "damghan-cable", "alborz"],
+  "switches-sockets": ["deland", "iran-electric", "part-electric"],
+  "circuit-protection": ["dena-electric", "pars-fanal", "shiva-amvaj"],
+  lighting: ["afratab", "mazi-noor", "pars-shahab"],
+  industrial: ["pars-fanal", "shiva-amvaj", "dena-electric"],
+  panels: ["pars-fanal", "part-electric", "shiva-amvaj"],
+  conduits: ["alborz", "damghan-cable", "afshar-nejad"],
+  accessories: ["part-electric", "iran-electric", "shiva-amvaj"],
+};
 
 /** All prices below are invented for presentation, never live price quotes. */
 export type SamplePrice = {
