@@ -37,7 +37,7 @@ export const brands: Brand[] = [
   {slug:"part-electric",name:"پارت الکتریک",image:"/images/brands/part-electric.webp",field:"کلید و پریز"},
   {slug:"damghan-cable",name:"سیم و کابل دامغان",image:"/images/brands/damghan-cable.webp",field:"سیم و کابل"},
   {slug:"shiva-amvaj",name:"شیوا امواج",image:"/images/brands/shiva-amvaj.webp",field:"کنترل صنعتی"},
-"];
+];
 
 /** Temporary category-to-brand associations for the Production V1 demo. Replace after the client confirms the final assortment. */
 export const categoryBrandSlugs: Record<string, string[]> = {
