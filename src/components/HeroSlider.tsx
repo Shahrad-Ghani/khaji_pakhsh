@@ -60,60 +60,78 @@ const extendedSlides = [
   { slide: slides[0], key: "clone-first" },
 ];
 
+type Direction = -1 | 1;
+
 export function HeroSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [trackPosition, setTrackPosition] = useState(1);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [timerResetKey, setTimerResetKey] = useState(0);
   const isAnimatingRef = useRef(false);
+  const pendingMovesRef = useRef<Direction[]>([]);
 
-  const move = useCallback((direction: -1 | 1) => {
-    // Do not allow rapid clicks to push the track beyond its clone panels.
-    if (isAnimatingRef.current) return;
+  const move = useCallback((direction: Direction) => {
+    // Every arrow press restarts the autoplay countdown, even if this press
+    // arrives while a transition is running and must be queued.
+    setTimerResetKey((current) => current + 1);
+
+    if (isAnimatingRef.current) {
+      pendingMovesRef.current.push(direction);
+      return;
+    }
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setActiveIndex((current) => (current + direction + slides.length) % slides.length);
 
     if (reducedMotion) {
-      // With transitions disabled, jump directly to a real panel (never a clone).
+      const queued = pendingMovesRef.current.splice(0);
+      const totalMove = direction + queued.reduce((sum, queuedDirection) => sum + queuedDirection, 0);
+      setActiveIndex((current) => (current + totalMove % slides.length + slides.length) % slides.length);
       setTrackPosition((current) => {
-        const next = current + direction;
-        if (next <= 0) return slides.length;
-        if (next >= slides.length + 1) return 1;
-        return next;
+        const currentIndex =
+          current === 0 ? slides.length - 1 : current === slides.length + 1 ? 0 : current - 1;
+        return (currentIndex + totalMove % slides.length + slides.length) % slides.length + 1;
       });
       return;
     }
 
     isAnimatingRef.current = true;
     setIsAnimating(true);
+    setActiveIndex((current) => (current + direction + slides.length) % slides.length);
     setTrackPosition((current) => current + direction);
   }, []);
 
   const showPrevious = useCallback(() => move(-1), [move]);
   const showNext = useCallback(() => move(1), [move]);
 
+  const releaseAnimation = useCallback(() => {
+    isAnimatingRef.current = false;
+    setIsAnimating(false);
+    const nextMove = pendingMovesRef.current.shift();
+    if (nextMove !== undefined) {
+      window.setTimeout(() => move(nextMove), 0);
+    }
+  }, [move]);
+
   useEffect(() => {
     // Respect reduced-motion preferences; manual navigation remains available.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // A timeout (rather than a persistent interval) starts a fresh 5s wait
-    // after every accepted navigation, including manual arrow/dot clicks.
+    // A fresh 5-second timeout starts after every slide change or arrow press.
     const timer = window.setTimeout(showNext, 5000);
     return () => window.clearTimeout(timer);
-  }, [activeIndex, showNext]);
+  }, [activeIndex, timerResetKey, showNext]);
 
   useEffect(() => {
     if (isTransitionEnabled) return;
     const frame = window.requestAnimationFrame(() => {
       setIsTransitionEnabled(true);
-      isAnimatingRef.current = false;
-      setIsAnimating(false);
+      releaseAnimation();
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [isTransitionEnabled]);
+  }, [isTransitionEnabled, releaseAnimation]);
 
-  // Failsafe: unlock if the browser doesn't emit transitionend.
+  // Failsafe: recover if the browser doesn't emit transitionend.
   useEffect(() => {
     if (!isAnimating || !isTransitionEnabled) return;
 
@@ -125,13 +143,12 @@ export function HeroSlider() {
         setIsTransitionEnabled(false);
         setTrackPosition(1);
       } else {
-        isAnimatingRef.current = false;
-        setIsAnimating(false);
+        releaseAnimation();
       }
     }, 1200);
 
     return () => window.clearTimeout(timer);
-  }, [isAnimating, isTransitionEnabled, trackPosition]);
+  }, [isAnimating, isTransitionEnabled, trackPosition, releaseAnimation]);
 
   const handleTrackTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget || event.propertyName !== "transform") {
@@ -145,12 +162,12 @@ export function HeroSlider() {
       setIsTransitionEnabled(false);
       setTrackPosition(1);
     } else {
-      isAnimatingRef.current = false;
-      setIsAnimating(false);
+      releaseAnimation();
     }
   };
 
   const goToSlide = (index: number) => {
+    setTimerResetKey((current) => current + 1);
     if (index === activeIndex || isAnimatingRef.current) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -253,7 +270,6 @@ export function HeroSlider() {
           className="hero-slider-arrow hero-slider-previous"
           type="button"
           onClick={showPrevious}
-          disabled={isAnimating}
           aria-label="اسلاید قبلی"
         >
           <Icon name="arrow" size={21} />
@@ -262,7 +278,6 @@ export function HeroSlider() {
           className="hero-slider-arrow hero-slider-next"
           type="button"
           onClick={showNext}
-          disabled={isAnimating}
           aria-label="اسلاید بعدی"
         >
           <Icon name="arrow" size={21} />
