@@ -39,6 +39,18 @@ export const brands: Brand[] = [
   {slug:"shiva-amvaj",name:"شیوا امواج",image:"/images/brands/shiva-amvaj.webp",field:"کنترل صنعتی"},
 ];
 
+/** Temporary category-to-brand associations for the Production V1 demo. Replace after the client confirms the final assortment. */
+export const categoryBrandSlugs: Record<string, string[]> = {
+  "wire-cable": ["afshar-nejad", "damghan-cable", "alborz", "part-electric", "iran-electric", "pars-shoa-toos"],
+  "switches-sockets": ["deland", "iran-electric", "part-electric", "alborz", "dena-electric", "pars-fanal"],
+  "circuit-protection": ["dena-electric", "pars-fanal", "shiva-amvaj", "part-electric", "iran-electric", "deland"],
+  lighting: ["afratab", "mazi-noor", "pars-shahab", "pars-shoa-toos", "dena-electric", "alborz"],
+  industrial: ["pars-fanal", "shiva-amvaj", "dena-electric", "mazi-noor", "pars-shahab", "part-electric"],
+  panels: ["pars-fanal", "part-electric", "shiva-amvaj", "dena-electric", "iran-electric", "alborz"],
+  conduits: ["alborz", "damghan-cable", "afshar-nejad", "pars-shoa-toos", "part-electric", "deland"],
+  accessories: ["part-electric", "iran-electric", "shiva-amvaj", "deland", "pars-fanal", "afratab"],
+};
+
 /** All prices below are invented for presentation, never live price quotes. */
 export type SamplePrice = {
  id:number; group:string; product:string; brand:string; unit:string; price:number|string;
