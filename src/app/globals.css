@@ -716,3 +716,42 @@ html{scroll-padding-top:168px}
 @media(prefers-reduced-motion:reduce){
  .hero-slider-art-layer,.hero-slider-copy,.hero-slider-arrow,.hero-slider-dot{animation:none!important;transition:none!important}
 }
+
+
+/* ===== Production V1: combined category + brand cards ===== */
+.category-brand-section{padding-top:clamp(34px,5vw,66px);padding-bottom:clamp(34px,5vw,66px)}
+.section-anchor{position:relative;display:block;height:0;scroll-margin-top:100px;top:-85px}
+.category-brand-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;align-items:stretch}
+.category-brand-card{min-width:0;min-height:174px;padding:16px 15px 15px;border:1px solid #e9e5dc;border-radius:18px;background:linear-gradient(145deg,#fff 0%,#fdfcf9 100%);box-shadow:0 5px 18px rgba(42,36,22,.035);transition:transform .25s,border-color .25s,box-shadow .25s}
+.category-brand-card:hover{border-color:#c4a650;transform:translateY(-2px);box-shadow:0 12px 28px rgba(57,49,24,.075)}
+.category-brand-card-head{min-height:40px;display:flex;align-items:center}
+.category-brand-title{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:9px;color:#272723;text-decoration:none}
+.category-brand-title h3{min-width:0;margin:0;font-size:clamp(13px,1.1vw,17px);font-weight:800;line-height:1.5;overflow-wrap:anywhere}
+.category-brand-arrow{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:#f6f0dd;color:#a18437;transition:background .2s,color .2s,transform .2s}
+.category-brand-title:hover .category-brand-arrow{background:#a18437;color:#fff;transform:translateX(-2px)}
+.category-brand-divider{height:1px;margin:12px 0 14px;background:#efede6}
+.category-brand-logos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+.category-brand-logo{min-width:0;height:62px;display:flex;align-items:center;justify-content:center;border:1px solid #f1efe9;border-radius:11px;background:#fff;transition:border-color .2s,background .2s,transform .2s;overflow:hidden}
+.category-brand-logo:hover{border-color:#d5c17f;background:#fffdf7;transform:translateY(-2px)}
+.category-brand-logo img{display:block;width:100%;height:100%;object-fit:contain;padding:7px}
+@media(max-width:1050px){
+ .category-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+ .category-brand-card{min-height:166px}
+ .category-brand-title h3{font-size:16px}
+}
+@media(max-width:520px){
+ .category-brand-section{padding-top:32px;padding-bottom:34px}
+ .category-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .category-brand-card{min-height:145px;padding:11px 10px 10px;border-radius:14px}
+ .category-brand-card-head{min-height:35px}
+ .category-brand-title{gap:5px}
+ .category-brand-title h3{font-size:12px;line-height:1.55}
+ .category-brand-arrow{width:27px;height:27px}
+ .category-brand-divider{margin:9px 0 10px}
+ .category-brand-logos{gap:5px}
+ .category-brand-logo{height:48px;border-radius:8px}
+ .category-brand-logo img{padding:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ .category-brand-card,.category-brand-arrow,.category-brand-logo{transition:none!important}
+}
