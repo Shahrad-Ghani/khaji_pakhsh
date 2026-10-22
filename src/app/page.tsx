@@ -3,6 +3,7 @@ import Link from "next/link";
 import {categories,brands} from "@/content/site";
 import {Icon} from "@/components/Icon";
 import {SiteHeader} from "@/components/SiteHeader";
+import {HeroSlider} from "@/components/HeroSlider";
 import {DemoContactButton} from "@/components/DemoContactButton";
 import {PriceTable} from "@/components/PriceTable";
 import {FAQAccordion} from "@/components/FAQAccordion";
@@ -26,7 +27,7 @@ export default function HomePage(){return <>
  <div id="home"/>
  {/* 01 */}<SiteHeader/>
  <main>
- {/* 03 Hero */}<section className="hero-wrap" aria-labelledby="hero-title"><div className="hero"><div className="hero-art" aria-hidden="true"><Image src="/images/hero/khaji-hero-products.webp" alt="" fill priority sizes="(max-width: 760px) 100vw, 58vw" className="hero-art-image"/></div><div className="hero-shine" aria-hidden="true"/><div className="hero-copy"><h1 id="hero-title">تأمین عمده<br/><span>تجهیزات الکتریکی</span></h1><span className="hero-rule"/><p>فروش انواع سیم و کابل، کلید و پریز، روشنایی و تجهیزات برق صنعتی؛ از انتخاب کالا تا ارتباط با واحد فروش.</p><div className="hero-cta"><DemoContactButton className="button button-gold button-xl">تماس با فروش <Icon name="phone" size={19}/></DemoContactButton></div></div></div></section>
+ {/* 03 Hero */}<HeroSlider/>
  {/* 04 Categories */}<section className="section categories-section" id="categories" aria-labelledby="categories-title"><div className="container"><SectionHeading eyebrow="دسته‌بندی محصولات" title="هر آنچه برای تأمین کالای برق نیاز دارید" description="کالای موردنظر خود را از میان گروه‌های اصلی برق ساختمانی، روشنایی و تجهیزات صنعتی پیدا کنید."/><div className="category-grid">{categories.map((cat)=><Link className="category-card" key={cat.slug} href={`/categories/${cat.slug}`} aria-label={`مشاهده محصولات ${cat.title}`}><div className="category-visual"><Image src={cat.image} alt="" fill sizes="(max-width: 720px) 70vw, 32vw" loading="lazy"/></div><div className="category-body"><h3>{cat.shortTitle}</h3><p>{cat.subtitle}</p><span className="category-link">مشاهده محصولات <span><Icon name="arrow" size={19}/></span></span></div></Link>)}</div></div></section>
  {/* 05 Brands */}<section className="section brands-section" id="brands"><div className="container"><SectionHeading eyebrow="همراه با برندهای ایرانی" title="برندها را بشناسید" description="کاتالوگ محصولات را بر اساس برند انتخاب کنید؛ لوگوها از کارت‌های ارسالی پروژه استخراج شده‌اند."/><div className="brand-grid">{brands.map(brand=><Link className="brand-card" href={`/brands/${brand.slug}`} key={brand.slug} aria-label={`مشاهده صفحه برند ${brand.name}`}><div className="brand-image"><Image src={brand.image} alt={`نشان برند ${brand.name}`} fill sizes="(max-width: 640px) 44vw, (max-width: 940px) 30vw, 22vw" loading="lazy"/></div><span className="brand-label">{brand.name}</span><span className="brand-arrow"><Icon name="arrow" size={16}/></span></Link>)}</div></div></section>
  {/* 06 Price List */}<section className="section prices-section" id="price-lists"><div className="container"><SectionHeading eyebrow="مرکز لیست قیمت" title="لیست قیمت عمده محصولات" description="نمایی منظم و قابل جست‌وجو برای مرور گروه‌های مختلف کالا؛ اعداد زیر صرفاً برای نمایش طراحی هستند."/><PriceTable/></div></section>
