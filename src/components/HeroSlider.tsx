@@ -142,6 +142,7 @@ export function HeroSlider() {
                     alt=""
                     fill
                     priority={slide.id === "bulk"}
+                    loading="eager"
                     sizes="(max-width: 720px) 100vw, 54vw"
                     className="hero-slider-image"
                   />
