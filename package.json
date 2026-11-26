@@ -1,3 +1,4 @@
+
 {
   "name": "khaji-website-demo",
   "private": true,
@@ -11,14 +12,29 @@
     "prebuild": "node scripts/ensure-fonts.mjs"
   },
   "dependencies": {
-    "next": "^15.5.0",
+    "dotenv": "^18.0.10",
+    "drizzle-orm": "^0.45.4",
+    "next": "^15.5.29",
+    "pg": "^8.23.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "4.23.15",
     "typescript": "^5.8.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.33"
+    },
+    "drizzle-kit": {
+      "@esbuild-kit/esm-loader": "npm:tsx@4.23.15"
+    }
   }
 }
