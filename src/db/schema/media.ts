@@ -5,7 +5,7 @@ import { adminUsers } from "./admin";
 
 export const mediaAssets = pgTable("media_assets", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "media_assets_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "media_assets_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	storageKey: text("storage_key").notNull(),
 	originalFilename: text("original_filename"),
 	mimeType: text("mime_type").notNull(),

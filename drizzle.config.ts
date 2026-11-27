@@ -22,4 +22,9 @@ export default defineConfig({
   },
 
   schemaFilter: ["public"],
+
+  migrations: {
+    schema: "drizzle",
+    table: "__drizzle_migrations",
+  },
 });

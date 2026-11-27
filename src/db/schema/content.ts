@@ -5,7 +5,7 @@ import { mediaAssets } from "./media";
 
 export const contentItems = pgTable("content_items", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "content_items_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "content_items_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	contentType: text("content_type").notNull(),
 	slug: text().notNull(),
 	canonicalPath: text("canonical_path").notNull(),

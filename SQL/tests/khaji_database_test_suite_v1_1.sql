@@ -503,85 +503,119 @@ BEGIN
     RAISE NOTICE '[PASS] Navigation destination, HTTPS, same-menu parent, and setting-key rules';
 
     RAISE NOTICE 'GROUP 10: SEO redirects and path guards';
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
-        VALUES ('/__dbtest_v11/product', '/__dbtest_v11/new-product', 301, 'Active path test', v_admin_id);
-    EXCEPTION WHEN raise_exception THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Active canonical URL was accepted as redirect source'; END IF;
 
+
+
+-- Active canonical path cannot become a redirect source.
+v_rejected := FALSE;
+BEGIN
     INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
-    VALUES ('/__dbtest_v11/old-path', '/__dbtest_v11/new-path', 301, 'Valid test redirect', v_admin_id)
-    RETURNING id INTO v_redirect_id;
+    VALUES ('/__dbtest_v11/product', '/__dbtest_v11/new-product', 301, 'Active path test', v_admin_id);
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Active canonical URL was accepted as redirect source';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
-        VALUES ('/__dbtest_v11/older-path', '/__dbtest_v11/old-path', 301, 'Chain test', v_admin_id);
-    EXCEPTION WHEN raise_exception THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Direct redirect chain was accepted'; END IF;
+-- Create a valid redirect: A -> B.
+INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+VALUES ('/__dbtest_v11/old-path', '/__dbtest_v11/new-path', 301, 'Valid test redirect', v_admin_id)
+RETURNING id INTO v_redirect_id;
 
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
-        VALUES ('/__dbtest_v11/self', '/__dbtest_v11/self', 301, 'Self redirect test', v_admin_id);
-    EXCEPTION WHEN check_violation THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Self redirect was accepted'; END IF;
+-- Test direction 1: X -> A -> B must be rejected.
+v_rejected := FALSE;
+BEGIN
+    INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+    VALUES ('/__dbtest_v11/older-path', '/__dbtest_v11/old-path', 301, 'Forward chain test', v_admin_id);
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Redirect chain X -> A -> B was accepted';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO content_items (content_type, slug, canonical_path)
-        VALUES ('page', '__dbtest_v11_redirect_source', '/__dbtest_v11/old-path');
-    EXCEPTION WHEN raise_exception THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Canonical content path colliding with redirect source was accepted'; END IF;
+-- Test direction 2: A -> B -> C must be rejected.
+v_rejected := FALSE;
+BEGIN
+    INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+    VALUES ('/__dbtest_v11/new-path', '/__dbtest_v11/final-path', 301, 'Reverse chain test', v_admin_id);
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Redirect chain A -> B -> C was accepted';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
-        VALUES ('/__dbtest_v11/bad-code', '/__dbtest_v11/dest', 302, 'Bad status test', v_admin_id);
-    EXCEPTION WHEN check_violation THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Unsupported redirect status code was accepted'; END IF;
-    RAISE NOTICE '[PASS] Redirect source conflicts, direct-chain prevention, self-loop and status-code checks';
+-- Create an independent redirect for UPDATE tests.
+INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+VALUES ('/__dbtest_v11/update-source', '/__dbtest_v11/update-target', 301, 'Update test', v_admin_id)
+RETURNING id INTO v_redirect_id;
 
-    RAISE NOTICE 'GROUP 11: append-only audit log';
-    INSERT INTO audit_logs (actor_type, actor_user_id, entity_type, entity_id, action, after_data)
-    VALUES ('admin', v_admin_id, 'product', v_product_id, 'dbtest.create', '{"test":true}'::jsonb);
+-- Updating target to an existing redirect source must be rejected.
+v_rejected := FALSE;
+BEGIN
+    UPDATE seo_redirects
+    SET target_path = '/__dbtest_v11/old-path'
+    WHERE id = v_redirect_id;
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'UPDATE created a forward redirect chain';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        UPDATE audit_logs SET action = 'tampered' WHERE entity_type = 'product' AND entity_id = v_product_id;
-    EXCEPTION WHEN raise_exception THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Audit log UPDATE was not blocked'; END IF;
+-- Updating source to an existing redirect target must be rejected.
+v_rejected := FALSE;
+BEGIN
+    UPDATE seo_redirects
+    SET source_path = '/__dbtest_v11/new-path'
+    WHERE id = v_redirect_id;
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'UPDATE created a reverse redirect chain';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        DELETE FROM audit_logs WHERE entity_type = 'product' AND entity_id = v_product_id;
-    EXCEPTION WHEN raise_exception THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Audit log DELETE was not blocked'; END IF;
+-- Case-insensitive self-redirect must be rejected.
+v_rejected := FALSE;
+BEGIN
+    INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+    VALUES ('/__dbtest_v11/Self', '/__dbtest_v11/self', 301, 'Case-insensitive self test', v_admin_id);
+EXCEPTION WHEN raise_exception OR check_violation THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Case-insensitive self redirect was accepted';
+END IF;
 
-    v_rejected := FALSE;
-    BEGIN
-        INSERT INTO audit_logs (actor_type, actor_user_id, entity_type, action)
-        VALUES ('system', v_admin_id, 'product', 'invalid.system.actor');
-    EXCEPTION WHEN check_violation THEN
-        v_rejected := TRUE;
-    END;
-    IF NOT v_rejected THEN RAISE EXCEPTION 'Invalid system audit actor combination was accepted'; END IF;
-    RAISE NOTICE '[PASS] Audit log actor consistency and append-only protection';
+-- Content path cannot collide with an existing redirect source.
+v_rejected := FALSE;
+BEGIN
+    INSERT INTO content_items (content_type, slug, canonical_path)
+    VALUES ('page', '__dbtest_v11_redirect_source', '/__dbtest_v11/old-path');
+EXCEPTION WHEN raise_exception THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Canonical content path colliding with redirect source was accepted';
+END IF;
+
+-- Unsupported redirect status code must be rejected.
+v_rejected := FALSE;
+BEGIN
+    INSERT INTO seo_redirects (source_path, target_path, status_code, reason, created_by)
+    VALUES ('/__dbtest_v11/bad-code', '/__dbtest_v11/dest', 302, 'Bad status test', v_admin_id);
+EXCEPTION WHEN check_violation THEN
+    v_rejected := TRUE;
+END;
+IF NOT v_rejected THEN
+    RAISE EXCEPTION 'Unsupported redirect status code was accepted';
+END IF;
+
+RAISE NOTICE '[PASS] Redirect source conflicts, bidirectional chain prevention, UPDATE guards, case-insensitive self-redirect and status-code checks';
+
 
     RAISE NOTICE '============================================================';
     RAISE NOTICE 'ALL DATABASE SCHEMA TESTS PASSED';

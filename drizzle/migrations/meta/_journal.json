@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795707487959,
+      "tag": "0000_baseline-v1-1",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795708232835,
+      "tag": "0001_logic-and-rbac-seeds",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795789909014,
+      "tag": "0002_fix-seo-redirect-guards",
+      "breakpoints": true
+    }
+  ]
+}

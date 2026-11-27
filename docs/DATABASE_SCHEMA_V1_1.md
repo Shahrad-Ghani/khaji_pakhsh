@@ -45,8 +45,23 @@ src/
    foreign keys and one-to-one cardinality. Join fields are declared on the FK-owning
    side; inverse `one()` relations are inferred by Drizzle.
 4. Product-to-current-price is modeled as one-to-one.
-5. Navigation parent/child relations now use the composite
-   `(menu_id, parent_item_id) -> (id, menu_id)` mapping.
+5. Navigation parent/child relations use the correct composite mapping:
+   `(menu_id, parent_item_id) -> (menu_id, id)`.
+   The referenced unique constraint is `UNIQUE (menu_id, id)`. The Drizzle
+   foreign-key declaration and relational mapping must preserve this exact column
+   order.
+
+## Pending database alignment
+
+The Drizzle declaration for the SEO self-redirect check is being changed to a
+case-insensitive comparison:
+
+`lower(source_path) <> lower(target_path)`.
+
+This is a schema-code change only until a corresponding new SQL migration is
+created and successfully applied. The existing V1.1 migration files must remain
+unchanged. Do not consider the Drizzle schema and physical PostgreSQL constraint
+fully synchronized until that migration has been applied and verified.
 
 ## Integration notes
 

@@ -1,7 +1,39 @@
-import { relations } from "drizzle-orm/relations";
-import { adminUsers, mediaAssets, contentItems, categories, brands, products, productMedia, priceImportBatches, productPrices, priceHistory, priceLists, priceListPublications, pages, pageRevisions, pageRevisionMedia, navigationMenus, navigationItems, siteSettings, seoRedirects, auditLogs, adminUserRoles, roles, rolePermissions, permissions, productCategories, categoryAttributes, attributes, productAttributeValues, priceImportRows, priceListPublicationItems } from "./schema";
 
-export const mediaAssetsRelations = relations(mediaAssets, ({one, many}) => ({
+import { relations } from "drizzle-orm/relations";
+import {
+	adminUsers,
+	mediaAssets,
+	contentItems,
+	categories,
+	brands,
+	products,
+	productMedia,
+	priceImportBatches,
+	productPrices,
+	priceHistory,
+	priceLists,
+	priceListPublications,
+	pages,
+	pageRevisions,
+	pageRevisionMedia,
+	navigationMenus,
+	navigationItems,
+	siteSettings,
+	seoRedirects,
+	auditLogs,
+	adminUserRoles,
+	roles,
+	rolePermissions,
+	permissions,
+	productCategories,
+	categoryAttributes,
+	attributes,
+	productAttributeValues,
+	priceImportRows,
+	priceListPublicationItems
+} from "./schema";
+
+export const mediaAssetsRelations = relations(mediaAssets, ({ one, many }) => ({
 	adminUser: one(adminUsers, {
 		fields: [mediaAssets.uploadedBy],
 		references: [adminUsers.id]
@@ -15,7 +47,7 @@ export const mediaAssetsRelations = relations(mediaAssets, ({one, many}) => ({
 	pageRevisionMedias: many(pageRevisionMedia),
 }));
 
-export const adminUsersRelations = relations(adminUsers, ({many}) => ({
+export const adminUsersRelations = relations(adminUsers, ({ many }) => ({
 	mediaAssets: many(mediaAssets),
 	priceImportBatches: many(priceImportBatches),
 	productPrices: many(productPrices),
@@ -41,7 +73,7 @@ export const adminUsersRelations = relations(adminUsers, ({many}) => ({
 	adminUserRoles: many(adminUserRoles),
 }));
 
-export const contentItemsRelations = relations(contentItems, ({one, many}) => ({
+export const contentItemsRelations = relations(contentItems, ({ one, many }) => ({
 	mediaAsset: one(mediaAssets, {
 		fields: [contentItems.ogImageMediaId],
 		references: [mediaAssets.id]
@@ -54,7 +86,7 @@ export const contentItemsRelations = relations(contentItems, ({one, many}) => ({
 	navigationItems: many(navigationItems),
 }));
 
-export const categoriesRelations = relations(categories, ({one, many}) => ({
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
 	category: one(categories, {
 		fields: [categories.parentId],
 		references: [categories.id],
@@ -77,7 +109,7 @@ export const categoriesRelations = relations(categories, ({one, many}) => ({
 	categoryAttributes: many(categoryAttributes),
 }));
 
-export const brandsRelations = relations(brands, ({one, many}) => ({
+export const brandsRelations = relations(brands, ({ one, many }) => ({
 	mediaAsset: one(mediaAssets, {
 		fields: [brands.logoMediaId],
 		references: [mediaAssets.id]
@@ -90,7 +122,7 @@ export const brandsRelations = relations(brands, ({one, many}) => ({
 	priceLists: many(priceLists),
 }));
 
-export const productsRelations = relations(products, ({one, many}) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
 	brand: one(brands, {
 		fields: [products.brandId],
 		references: [brands.id]
@@ -112,7 +144,7 @@ export const productsRelations = relations(products, ({one, many}) => ({
 	priceListPublicationItems: many(priceListPublicationItems),
 }));
 
-export const productMediaRelations = relations(productMedia, ({one}) => ({
+export const productMediaRelations = relations(productMedia, ({ one }) => ({
 	product: one(products, {
 		fields: [productMedia.productId],
 		references: [products.id]
@@ -123,7 +155,7 @@ export const productMediaRelations = relations(productMedia, ({one}) => ({
 	}),
 }));
 
-export const priceImportBatchesRelations = relations(priceImportBatches, ({one, many}) => ({
+export const priceImportBatchesRelations = relations(priceImportBatches, ({ one, many }) => ({
 	mediaAsset: one(mediaAssets, {
 		fields: [priceImportBatches.sourceFileMediaId],
 		references: [mediaAssets.id]
@@ -136,7 +168,7 @@ export const priceImportBatchesRelations = relations(priceImportBatches, ({one, 
 	priceImportRows: many(priceImportRows),
 }));
 
-export const productPricesRelations = relations(productPrices, ({one}) => ({
+export const productPricesRelations = relations(productPrices, ({ one }) => ({
 	adminUser: one(adminUsers, {
 		fields: [productPrices.updatedBy],
 		references: [adminUsers.id]
@@ -147,7 +179,7 @@ export const productPricesRelations = relations(productPrices, ({one}) => ({
 	}),
 }));
 
-export const priceHistoryRelations = relations(priceHistory, ({one}) => ({
+export const priceHistoryRelations = relations(priceHistory, ({ one }) => ({
 	product: one(products, {
 		fields: [priceHistory.productId],
 		references: [products.id]
@@ -162,7 +194,7 @@ export const priceHistoryRelations = relations(priceHistory, ({one}) => ({
 	}),
 }));
 
-export const priceListsRelations = relations(priceLists, ({one, many}) => ({
+export const priceListsRelations = relations(priceLists, ({ one, many }) => ({
 	category: one(categories, {
 		fields: [priceLists.categoryId],
 		references: [categories.id]
@@ -178,7 +210,7 @@ export const priceListsRelations = relations(priceLists, ({one, many}) => ({
 	priceListPublications: many(priceListPublications),
 }));
 
-export const priceListPublicationsRelations = relations(priceListPublications, ({one, many}) => ({
+export const priceListPublicationsRelations = relations(priceListPublications, ({ one, many }) => ({
 	priceList: one(priceLists, {
 		fields: [priceListPublications.priceListId],
 		references: [priceLists.id]
@@ -196,7 +228,7 @@ export const priceListPublicationsRelations = relations(priceListPublications, (
 	priceListPublicationItems: many(priceListPublicationItems),
 }));
 
-export const pagesRelations = relations(pages, ({one, many}) => ({
+export const pagesRelations = relations(pages, ({ one, many }) => ({
 	contentItem: one(contentItems, {
 		fields: [pages.contentItemId, pages.contentType],
 		references: [contentItems.id, contentItems.contentType]
@@ -204,7 +236,7 @@ export const pagesRelations = relations(pages, ({one, many}) => ({
 	pageRevisions: many(pageRevisions),
 }));
 
-export const pageRevisionsRelations = relations(pageRevisions, ({one, many}) => ({
+export const pageRevisionsRelations = relations(pageRevisions, ({ one, many }) => ({
 	page: one(pages, {
 		fields: [pageRevisions.pageContentItemId],
 		references: [pages.contentItemId]
@@ -231,7 +263,7 @@ export const pageRevisionsRelations = relations(pageRevisions, ({one, many}) => 
 	pageRevisionMedias: many(pageRevisionMedia),
 }));
 
-export const pageRevisionMediaRelations = relations(pageRevisionMedia, ({one}) => ({
+export const pageRevisionMediaRelations = relations(pageRevisionMedia, ({ one }) => ({
 	pageRevision: one(pageRevisions, {
 		fields: [pageRevisionMedia.revisionId],
 		references: [pageRevisions.id]
@@ -242,7 +274,7 @@ export const pageRevisionMediaRelations = relations(pageRevisionMedia, ({one}) =
 	}),
 }));
 
-export const navigationItemsRelations = relations(navigationItems, ({one, many}) => ({
+export const navigationItemsRelations = relations(navigationItems, ({ one, many }) => ({
 	navigationMenu: one(navigationMenus, {
 		fields: [navigationItems.menuId],
 		references: [navigationMenus.id]
@@ -251,42 +283,46 @@ export const navigationItemsRelations = relations(navigationItems, ({one, many})
 		fields: [navigationItems.targetContentItemId],
 		references: [contentItems.id]
 	}),
+
+	// Correct composite self-relation:
+	// (menu_id, parent_item_id) -> (menu_id, id)
 	parentItem: one(navigationItems, {
 		fields: [navigationItems.menuId, navigationItems.parentItemId],
-		references: [navigationItems.id, navigationItems.menuId],
+		references: [navigationItems.menuId, navigationItems.id],
 		relationName: "navigationItems_menuId_navigationItems_id"
 	}),
+
 	childItems: many(navigationItems, {
 		relationName: "navigationItems_menuId_navigationItems_id"
 	}),
 }));
 
-export const navigationMenusRelations = relations(navigationMenus, ({many}) => ({
+export const navigationMenusRelations = relations(navigationMenus, ({ many }) => ({
 	navigationItems: many(navigationItems),
 }));
 
-export const siteSettingsRelations = relations(siteSettings, ({one}) => ({
+export const siteSettingsRelations = relations(siteSettings, ({ one }) => ({
 	adminUser: one(adminUsers, {
 		fields: [siteSettings.updatedBy],
 		references: [adminUsers.id]
 	}),
 }));
 
-export const seoRedirectsRelations = relations(seoRedirects, ({one}) => ({
+export const seoRedirectsRelations = relations(seoRedirects, ({ one }) => ({
 	adminUser: one(adminUsers, {
 		fields: [seoRedirects.createdBy],
 		references: [adminUsers.id]
 	}),
 }));
 
-export const auditLogsRelations = relations(auditLogs, ({one}) => ({
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
 	adminUser: one(adminUsers, {
 		fields: [auditLogs.actorUserId],
 		references: [adminUsers.id]
 	}),
 }));
 
-export const adminUserRolesRelations = relations(adminUserRoles, ({one}) => ({
+export const adminUserRolesRelations = relations(adminUserRoles, ({ one }) => ({
 	adminUser: one(adminUsers, {
 		fields: [adminUserRoles.adminUserId],
 		references: [adminUsers.id]
@@ -297,12 +333,12 @@ export const adminUserRolesRelations = relations(adminUserRoles, ({one}) => ({
 	}),
 }));
 
-export const rolesRelations = relations(roles, ({many}) => ({
+export const rolesRelations = relations(roles, ({ many }) => ({
 	adminUserRoles: many(adminUserRoles),
 	rolePermissions: many(rolePermissions),
 }));
 
-export const rolePermissionsRelations = relations(rolePermissions, ({one}) => ({
+export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => ({
 	role: one(roles, {
 		fields: [rolePermissions.roleId],
 		references: [roles.id]
@@ -313,11 +349,11 @@ export const rolePermissionsRelations = relations(rolePermissions, ({one}) => ({
 	}),
 }));
 
-export const permissionsRelations = relations(permissions, ({many}) => ({
+export const permissionsRelations = relations(permissions, ({ many }) => ({
 	rolePermissions: many(rolePermissions),
 }));
 
-export const productCategoriesRelations = relations(productCategories, ({one}) => ({
+export const productCategoriesRelations = relations(productCategories, ({ one }) => ({
 	product: one(products, {
 		fields: [productCategories.productId],
 		references: [products.id]
@@ -328,7 +364,7 @@ export const productCategoriesRelations = relations(productCategories, ({one}) =
 	}),
 }));
 
-export const categoryAttributesRelations = relations(categoryAttributes, ({one}) => ({
+export const categoryAttributesRelations = relations(categoryAttributes, ({ one }) => ({
 	category: one(categories, {
 		fields: [categoryAttributes.categoryId],
 		references: [categories.id]
@@ -339,12 +375,12 @@ export const categoryAttributesRelations = relations(categoryAttributes, ({one})
 	}),
 }));
 
-export const attributesRelations = relations(attributes, ({many}) => ({
+export const attributesRelations = relations(attributes, ({ many }) => ({
 	categoryAttributes: many(categoryAttributes),
 	productAttributeValues: many(productAttributeValues),
 }));
 
-export const productAttributeValuesRelations = relations(productAttributeValues, ({one}) => ({
+export const productAttributeValuesRelations = relations(productAttributeValues, ({ one }) => ({
 	product: one(products, {
 		fields: [productAttributeValues.productId],
 		references: [products.id]
@@ -355,7 +391,7 @@ export const productAttributeValuesRelations = relations(productAttributeValues,
 	}),
 }));
 
-export const priceImportRowsRelations = relations(priceImportRows, ({one}) => ({
+export const priceImportRowsRelations = relations(priceImportRows, ({ one }) => ({
 	priceImportBatch: one(priceImportBatches, {
 		fields: [priceImportRows.batchId],
 		references: [priceImportBatches.id]
@@ -366,7 +402,7 @@ export const priceImportRowsRelations = relations(priceImportRows, ({one}) => ({
 	}),
 }));
 
-export const priceListPublicationItemsRelations = relations(priceListPublicationItems, ({one}) => ({
+export const priceListPublicationItemsRelations = relations(priceListPublicationItems, ({ one }) => ({
 	priceListPublication: one(priceListPublications, {
 		fields: [priceListPublicationItems.publicationId],
 		references: [priceListPublications.id]

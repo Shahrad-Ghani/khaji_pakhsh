@@ -8,7 +8,7 @@ import { mediaAssets } from "./media";
 
 export const priceImportBatches = pgTable("price_import_batches", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_import_batches_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_import_batches_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	sourceFileMediaId: bigint("source_file_media_id", { mode: "number" }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -59,7 +59,7 @@ export const productPrices = pgTable("product_prices", {
 
 export const priceHistory = pgTable("price_history", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_history_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_history_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	productId: bigint("product_id", { mode: "number" }).notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -98,7 +98,7 @@ export const priceHistory = pgTable("price_history", {
 
 export const priceLists = pgTable("price_lists", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_lists_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_lists_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	contentItemId: bigint("content_item_id", { mode: "number" }).notNull(),
 	contentType: text("content_type").default('price_list').notNull(),
@@ -135,7 +135,7 @@ export const priceLists = pgTable("price_lists", {
 
 export const priceListPublications = pgTable("price_list_publications", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_list_publications_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "price_list_publications_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	priceListId: bigint("price_list_id", { mode: "number" }).notNull(),
 	versionNumber: integer("version_number").notNull(),

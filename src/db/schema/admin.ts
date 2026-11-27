@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 
 export const adminUsers = pgTable("admin_users", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "admin_users_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "admin_users_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	email: text().notNull(),
 	passwordHash: text("password_hash").notNull(),
 	displayName: text("display_name").notNull(),
@@ -19,7 +19,7 @@ export const adminUsers = pgTable("admin_users", {
 
 export const roles = pgTable("roles", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "roles_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "roles_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	code: text().notNull(),
 	labelFa: text("label_fa").notNull(),
 }, (table) => [
@@ -29,7 +29,7 @@ export const roles = pgTable("roles", {
 
 export const permissions = pgTable("permissions", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "permissions_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "permissions_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	code: text().notNull(),
 	labelFa: text("label_fa").notNull(),
 }, (table) => [
@@ -39,7 +39,7 @@ export const permissions = pgTable("permissions", {
 
 export const auditLogs = pgTable("audit_logs", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "audit_logs_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity({ name: "audit_logs_id_seq", startWith: 1, increment: 1, minValue: 1, cache: 1 }),
 	actorType: text("actor_type").default('admin').notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	actorUserId: bigint("actor_user_id", { mode: "number" }),
